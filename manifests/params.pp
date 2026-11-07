@@ -35,6 +35,8 @@ class amanda::params {
       $shell                  = '/bin/sh'
       $group                  = 'backup'
       $groups                 = ['tape']
+      $xinetd_unsupported     = false
+      $generic_package        = undef
       $client_package         = 'amanda-client'
       $server_package         = 'amanda-server'
       $server_provides_client = false
@@ -117,6 +119,8 @@ class amanda::params {
         default            => 'amanda',   # FreeBSD >= 8.2 uses amanda group
       }
       $groups                 = ['operator']
+      $xinetd_unsupported     = false
+      $generic_package        = undef
       $client_package         = 'misc/amanda-client'
       $server_package         = 'misc/amanda-server'
       $server_provides_client = false # idunno
@@ -138,8 +142,10 @@ class amanda::params {
       $uid                    = '37'
       $user                   = 'amanda'
       $comment                = 'Amanda admin'
+      $shell                  = '/bin/sh'
       $group                  = 'amanda'
       $groups                 = ['tape']
+      $xinetd_unsupported     = false
       $generic_package        = 'amanda'
       $server_provides_client = true  # there's only one package on suse
       $amandad_path           = '/usr/lib/amanda/amandad'
@@ -162,6 +168,7 @@ class amanda::params {
       $group                  = 'backup'
       $groups                 = []
       $xinetd_unsupported     = true
+      $generic_package        = undef
       $client_package         = 'amanda-client'
       $server_package         = 'amanda-server'
       $server_provides_client = false # idunno
