@@ -11,6 +11,9 @@
 
 Provides Amanda Network Backup server and client configuration through Puppet
 
+On EL9 the amanda packages are only available from EPEL, which must be
+enabled before using this module.
+
 ## Usage
 
 The amanda module allows specifying parameterized classes that will do most of
