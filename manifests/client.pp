@@ -1,7 +1,7 @@
 class amanda::client (
   $remote_user      = undef,
   $server           = "backup.${facts['networking']['domain']}",
-  $xinetd           = true,
+  $xinetd           = false,
   $export_host_keys = false,
 ) {
   include amanda
@@ -13,12 +13,15 @@ class amanda::client (
     $remote_user_real = $amanda::params::user
   }
 
-  # for systems that don't use xinetd, don't use xinetd
+  # use xinetd if requested and supported, otherwise the listener shipped with
+  # the packages (inetd on Debian, systemd sockets on RedHat)
   if (("x${xinetd}" == 'xtrue') and !$amanda::params::xinetd_unsupported) {
     realize(
       Xinetd::Service['amanda_tcp'],
       Xinetd::Service['amanda_udp'],
     )
+  } else {
+    realize($amanda::virtual::socket_services)
   }
 
   if $amanda::params::generic_package {

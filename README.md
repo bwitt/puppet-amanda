@@ -200,8 +200,6 @@ amanda::disklist::dle { '/var':
 
 ## Known Issues
 
-* The module does not include tests
-
 * The module does not allow overriding of the client/server package name(s)
 
 ## Contributors

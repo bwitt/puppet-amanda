@@ -42,8 +42,19 @@
 # to the configs_directory you specify in the amanda::config resource, e.g.
 # /etc/amanda/rolling/.
 #
-class amanda {
+# @param manage_epel
+#   Whether to include the epel class, which provides the amanda packages on
+#   EL9. Set per OS in the module's hiera data; true on RedHat family except EL8.
+#
+class amanda (
+  Boolean $manage_epel,
+) {
   include amanda::params
+
+  if $manage_epel {
+    include epel
+  }
+
   include amanda::virtual
 
   realize(

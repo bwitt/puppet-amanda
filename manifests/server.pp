@@ -7,7 +7,7 @@ class amanda::server (
   String            $mode                     = '0644',
   Optional[Boolean] $group                    = undef,
   Optional[Boolean] $owner                    = undef,
-  Boolean           $xinetd                   = true,
+  Boolean           $xinetd                   = false,
   Boolean           $manage_dle               = false,
   Boolean           $export_host_keys         = false,
 ) {
@@ -39,7 +39,8 @@ class amanda::server (
     realize(Package['amanda/server'])
   }
 
-  # for systems that don't use xinetd, don't use xinetd
+  # use xinetd if requested and supported, otherwise the listener shipped with
+  # the packages (inetd on Debian, systemd sockets on RedHat)
   if (("x${xinetd}" == 'xtrue') and !$amanda::params::xinetd_unsupported) {
     realize(
       Xinetd::Service['amanda_indexd'],
@@ -47,6 +48,8 @@ class amanda::server (
       Xinetd::Service['amanda_tcp'],
       Xinetd::Service['amanda_udp'],
     )
+  } else {
+    realize($amanda::virtual::socket_services)
   }
 
   amanda::amandahosts { 'amanda::server::server_root@localhost':

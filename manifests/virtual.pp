@@ -1,4 +1,5 @@
 class amanda::virtual {
+  include amanda
   include amanda::params
 
   case $facts['os']['name'] {
@@ -65,20 +66,35 @@ class amanda::virtual {
     User[$amanda::params::user],
   ]
 
+  $socket_services = $amanda::params::systemd_sockets.map |$socket| { Service[$socket] }
+
+  $package_require = $amanda::manage_epel ? {
+    true    => Class['epel'],
+    default => undef,
+  }
+
   if $amanda::params::generic_package {
     @package { 'amanda':
-      name   => $amanda::params::generic_package,
-      before => $post_package;
+      name    => $amanda::params::generic_package,
+      before  => $post_package + $socket_services,
+      require => $package_require;
     }
   } else {
     @package { 'amanda/client':
-      name   => $amanda::params::client_package,
-      before => $post_package,
+      name    => $amanda::params::client_package,
+      before  => $post_package + $socket_services,
+      require => $package_require,
     }
     @package { 'amanda/server':
-      name   => $amanda::params::server_package,
-      before => $post_package,
+      name    => $amanda::params::server_package,
+      before  => $post_package + $socket_services,
+      require => $package_require,
     }
+  }
+
+  @service { $amanda::params::systemd_sockets:
+    ensure => running,
+    enable => true,
   }
 
   @concat { "${amanda::params::homedir}/.amandahosts":
